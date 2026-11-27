@@ -95,7 +95,7 @@ DSH 运行加速的**分层实现**：回合分类（L0）+ 计划与并行指�
     reuse:                # L4，默认关闭
       enabled: false
       requireThinking: true
-      patternsFile: C:/Users/steven/.dsh/fastlane/patterns.json
+      patternsFile: ~/.dsh/fastlane/patterns.json
 ```
 
 本插件**不导出 `Config` schema**，也不依赖 `@deepseek-ai/schemastery`：`link:` 安装按真实路径解析，插件目录下没有 `node_modules`，导入 schemastery 会 `ERR_MODULE_NOT_FOUND` 让整个 bundle 静默不加载。Cordis 只在插件声明 `Config` 时才校验（`cordis/lib/index.js:245`），所以省略 schema 既免依赖，配置键也照样透传给 `apply`。
@@ -109,7 +109,7 @@ DSH 运行加速的**分层实现**：回合分类（L0）+ 计划与并行指�
 ## 验证
 
 ```powershell
-$node = "C:\Users\steven\AppData\Local\Programs\DeepSeek Harness\DeepSeek Harness.exe"
+$node = "<DSH install>\DeepSeek Harness.exe"
 $env:ELECTRON_RUN_AS_NODE = 1
 & $node --test "plugins\dsh-fastlane\test\classify.test.mjs"
 & $node "plugins\dsh-fastlane\scripts\aggregate.mjs"
