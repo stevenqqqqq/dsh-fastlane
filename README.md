@@ -1,10 +1,28 @@
 # dsh-fastlane
 
-DSH 运行加速的**分层实现**：回合分类（L0）+ 计划与并行指令（L1/L2）+ 确定性剪枝（L3）+ 模式复用（L4）。默认 `mode: active` 全开（L4 关闭），每一层可单独关闭，`mode: shadow` 退回纯观察。
+[![DeepSeek Harness](https://img.shields.io/badge/DSH-%E2%89%A50.2.1--rc.5-blue)](#兼容性) [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+A speedup layer for **DeepSeek Harness (DSH)**: zero-call turn classification (L0) + tail-injected plan directives with a parallel hint (L1/L2) + deterministic context pruning (L3) + opt-in pattern reuse (L4). Every layer is independently switchable; `mode: shadow` keeps classification and metrics while disabling every mutation.
+
+DSH 运行加速的**分层实现**：回合分类（L0）+ 计划与并行指令（L1/L2）+ 确定性剪枝（L3）+ 模式复用（L4）。默认 `mode: active`（L4 关闭），每一层可单独关闭，`mode: shadow` 退回纯观察。
+
+## 安装
+
+```yaml
+# profile 的 cordis.patch.yml（与本包 cordis.patch.yml 同构）
+- insert:
+    - id: dsh-fastlane
+      name: dsh-fastlane
+      config: { enabled: true, mode: active }
+```
+
+或用 DSH 的 `plugin_manager`：`install_bundle` 指向本仓库目录/打包产物，装完 `set_plugin` 对 entry `include:dsh-fastlane` 先 false 再 true 重载。
+
+**注意**：本插件不导出 `Config` schema，也不依赖 `@deepseek-ai/schemastery`。`link:` 方式安装按真实路径解析，插件目录下没有 `node_modules` 时，导入 schemastery 会让整个 bundle 静默不加载；Cordis 只在插件声明 `Config` 时才校验（`cordis/lib/index.js:245`），省略 schema 既免依赖，配置键照样透传给 `apply`。
 
 ## 为什么是这一层
 
-调研结论（`docs/dsh-speedup-research.md`）：没有任何现成插件同时满足三条需求。需求③已由已装的 `billion-context` 覆盖；①② 缺的是"进入回合先分类 / 复杂任务先出计划"这一层，而现有候选各有硬伤——`planning-with-files` 每轮注入计划伤前缀缓存，`dsh-routing-suite` 只换系统提示风格、不分类也不并行，`dsh-fast` 只做只读诊断。唯一验证过"跳过整次模型回调"的样板是 `dsh-harnessmm`，但它面向工具动作复用，不含任务分类。
+调研结论（`docs/RESEARCH.md`）：没有任何现成插件同时满足三条需求。需求③已由 `billion-context` 覆盖；①② 缺的是"进入回合先分类 / 复杂任务先出计划"这一层，而现有候选各有硬伤——`planning-with-files` 每轮注入计划伤前缀缓存，`dsh-routing-suite` 只换系统提示风格、不分类也不并行，`dsh-fast` 只做只读诊断。唯一验证过"跳过整次模型回调"的样板是 `dsh-harnessmm`，但它面向工具动作复用，不含任务分类。
 
 于是自建 `dsh-fastlane`，四层分期：
 
