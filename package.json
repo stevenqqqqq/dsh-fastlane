@@ -32,6 +32,15 @@
     "caching",
     "compaction"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevenqqqqq/dsh-fastlane.git"
+  },
+  "homepage": "https://github.com/stevenqqqqq/dsh-fastlane#readme",
+  "bugs": {
+    "url": "https://github.com/stevenqqqqq/dsh-fastlane/issues"
+  },
+  "license": "MIT",
   "dsh": {
     "engines": {
       "dsh": ">=0.2.1-rc.5"
