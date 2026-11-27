@@ -1,0 +1,35 @@
+{
+  "_note": "Authored reuse patterns for dsh-fastlane L4. Copy to ~/.dsh/fastlane/patterns.json and set reuse.enabled=true. Every `{{slot}}` in a template must have a provenance entry naming where its value comes from; a pattern whose provenance is incomplete is never served. Patterns are matched only for turns that already repeated >= minHits times. Disable by leaving reuse.enabled=false — a match costs zero model callbacks, so authoring is the only guard against a stale answer.",
+  "_example": {
+    "id": "fastlane-report",
+    "version": 2,
+    "minHits": 3,
+    "match": {
+      "keywords": ["fastlane", "fastlane 报告"],
+      "allOf": ["日志"],
+      "noneOf": ["改", "修复", "删"],
+      "maxChars": 600
+    },
+    "template": "直接读聚合脚本输出，不要重新分析日志：\n\n1) `node scripts/aggregate.mjs`（可传 `~/.dsh/fastlane/shadow.jsonl`）\n2) 报告 turns/steps、plan 注入次数、parallel 比例、prune landed/chars、reuse 命中、cache-hit、errors。\n\n本次请求：{{request}}",
+    "provenance": [
+      { "slot": "request", "source": "用户本轮原文" }
+    ]
+  },
+  "patterns": [
+    {
+      "id": "fastlane-shadow-summary",
+      "version": 1,
+      "minHits": 3,
+      "match": {
+        "keywords": ["fastlane", "shadow.jsonl", "shadow 日志"],
+        "allOf": ["统计", "日志"],
+        "noneOf": ["修改", "安装", "卸载", "报错"],
+        "maxChars": 600
+      },
+      "template": "用已落地的聚合脚本，不要重新推导指标：\n\n```\ncd plugins/dsh-fastlane\nnode scripts/aggregate.mjs\n```\n\n输出里已经有 turns/steps、route 分布、plan 注入与并行比例、prune landed/chars、reuse 命中、cache-hit、errors；把这些数字按原样引用，missing 记 n/a。\n\n本次请求：{{request}}",
+      "provenance": [
+        { "slot": "request", "source": "用户本轮原文" }
+      ]
+    }
+  ]
+}

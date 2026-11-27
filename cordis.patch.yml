@@ -1,0 +1,31 @@
+# dsh-fastlane bundle layer.
+#
+# L0 classify + L1 plan + L2 parallel directive + L3 deterministic prune are on;
+# L4 reuse stays authored-and-off by default because a match skips the model
+# callback entirely. `mode: shadow` keeps classification/metrics and disables
+# every mutation; `mode: off` unregisters the llm/stream observer too.
+- insert:
+    - id: dsh-fastlane
+      name: dsh-fastlane
+      config:
+        enabled: true
+        mode: active
+        debug: true
+        plan:
+          enabled: true
+          maxSteps: 6
+          maxStepChars: 64
+        prune:
+          enabled: true
+          thresholdChars: 8192
+          headChars: 4096
+          tailChars: 1024
+          minTurnsBeforeFold: 3
+          minDuplicateChars: 1200
+          maxPerPass: 4
+          everyEvents: 6
+          diagnostics: false
+        reuse:
+          enabled: false
+          requireThinking: true
+          patternsFile: C:/Users/steven/.dsh/fastlane/patterns.json
