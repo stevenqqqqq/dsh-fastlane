@@ -1,6 +1,6 @@
 # DSH 运行提速：插件调研结论与定制方案
 
-调研对象：本机 DSH 0.2.2-rc.5，profile `desktop`，工作目录 `C:\Users\steven\WorkBuddy\deepseek harness`。
+调研对象：本机 DSH 0.2.2-rc.5，profile `desktop`，工作目录 `<workspace>`。
 依据：内核源码（app.asar 内 `@deepseek-ai/*`）、npm registry 实测清单、本机已装插件源码。
 结论先行：**没有任何单个插件同时满足三条需求**。上下文压缩（需求③）有成熟件且已装；分类/答案复用（需求①）与计划+并行（需求②）只有半个答案，且现有实现方式恰好损伤前缀缓存。建议自建 `dsh-fastlane`（三档路由 + 尾部注入 + 确定性剪枝），复用 billion-context 与 HarnessMM 的既有机制，不替换它们。
 
